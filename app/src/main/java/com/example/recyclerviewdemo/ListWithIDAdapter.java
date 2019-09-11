@@ -19,11 +19,13 @@ public class ListWithIDAdapter extends RecyclerView.Adapter<ListWithIDAdapter.Vi
     private ArrayList<String> hsptNames = new ArrayList<>();
     private ArrayList<Integer> hsptID = new ArrayList<>();
     private Context context;
+    private OnHsptListener onHsptListener;
 
-    public ListWithIDAdapter(Context context, ArrayList<Integer> hsptID, ArrayList<String> hsptNames) {
+    public ListWithIDAdapter(Context context, ArrayList<Integer> hsptID, ArrayList<String> hsptNames, OnHsptListener onHsptListener) {
         this.hsptNames = hsptNames;
         this.hsptID = hsptID;
         this.context = context;
+        this.onHsptListener = onHsptListener;
     }
 
     //below method same of almost any recyclerViews, just change the layout depending on use
@@ -31,7 +33,7 @@ public class ListWithIDAdapter extends RecyclerView.Adapter<ListWithIDAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_layout, parent, false);
-        ViewHolder holder = new ViewHolder(view);
+        ViewHolder holder = new ViewHolder(view, onHsptListener);
         return holder;
     }
 
@@ -39,14 +41,15 @@ public class ListWithIDAdapter extends RecyclerView.Adapter<ListWithIDAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         //to bind hospital name to the textview
         holder.hsptName.setText(hsptNames.get(position));
-        //get hospital id when clicked on it
-        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                Toast.makeText(context, String.valueOf(hsptID.get(position)), Toast.LENGTH_SHORT).show();
-            }
-        });
+
+        //get hospital id when clicked on it
+//        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Toast.makeText(context, String.valueOf(hsptID.get(position)), Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 
     @Override
@@ -56,14 +59,26 @@ public class ListWithIDAdapter extends RecyclerView.Adapter<ListWithIDAdapter.Vi
         return hsptNames.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView hsptName;
         LinearLayout parentLayout;
+        OnHsptListener onHsptListener;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView, OnHsptListener onHsptListener) {
             super(itemView);
             hsptName = itemView.findViewById(R.id.hsptName);
             parentLayout = itemView.findViewById(R.id.parentLayout);
+            this.onHsptListener = onHsptListener;
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View view) {
+            onHsptListener.OnHsptClickListener(getAdapterPosition());
+        }
+    }
+
+    public interface OnHsptListener{
+        void OnHsptClickListener(int position);
     }
 }
